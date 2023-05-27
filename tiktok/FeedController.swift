@@ -18,7 +18,7 @@ class FeedController: UIViewController {
 	// Define the item struct
 	struct Item: Hashable {
 		let id: Int
-		let title: String
+		let videoName: String
 	}
 	
 	// Create the collection view
@@ -45,11 +45,15 @@ class FeedController: UIViewController {
 	}
 	
 	
-	// Create the diffable data source
+	// Create the Diffable data source
 	private lazy var dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView) { collectionView, indexPath, item -> FeedCollectionViewCell? in
 		guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? FeedCollectionViewCell else {
 			return nil
 		}
+        if let url = Bundle.main.url(forResource: item.videoName, withExtension: "") {
+            cell.configure(with: url)
+            cell.playerView.play()
+        }
 		let color: UIColor = indexPath.row % 2 == 0 ? .red : .green
 		cell.backgroundColor = color
 		
@@ -77,7 +81,8 @@ class FeedController: UIViewController {
 		// Load the initial data
 		var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
 		snapshot.appendSections([.main])
-		snapshot.appendItems([Item(id: 1, title: "Item 1"), Item(id: 2, title: "Item 2"), Item(id: 3, title: "Item 3")])
+		snapshot.appendItems([Item(id: 1, videoName: "1.mp4"), Item(id: 2, videoName: "2.mp4"), Item(id: 3, videoName: "3.mp4")])
+        
 		dataSource.apply(snapshot, animatingDifferences: false)
 		
 	}
